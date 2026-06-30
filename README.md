@@ -18,7 +18,7 @@ These instructions assume you have Docker installed on your machine. If you don'
 
 Once Docker is installed, follow these steps:
 
-1. Set up an SSH tunnel from this computer to the remote compute node running vLLM:
+1. Set up an SSH tunnel from your local machine to the remote compute node running vLLM:
    ```
    export VLLM_API_KEY=my-vllm-api-key  # NOTE: use the actual key!
    ./Open_vLLM_tunnel_vLLM.sh user@hostname remote-node 8000 8000 my-vllm-key
