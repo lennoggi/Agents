@@ -1,0 +1,50 @@
+# ===================================================================================
+# See the following web pages for further info:
+# - Codex configuration reference:
+#   - https://developers.openai.com/codex/config-reference
+# - Connecting Codex to a custom LLM:
+#   - https://developers.openai.com/codex/config-advanced#custom-model-providers
+#   - https://docs.vllm.ai/en/latest/serving/integrations/codex
+# ===================================================================================
+# --------------
+# Model settings
+# --------------
+model              = "Qwen3-Coder-Next"
+model_provider     = "vllm"
+model_catalog_json = "/home/codex-client-user/.codex/model-catalogs/Qwen3-Coder-Next.json"
+personality        = "pragmatic"  # "none" | "friendly" | "pragmatic"
+
+# Qwen3-Coder-Next does not support resoning at all
+model_reasoning_effort             = "minimal"  # Not strictly needed, but "none" is not an option
+model_reasoning_summary            = "none"
+model_supports_reasoning_summaries = false
+plan_mode_reasoning_effort         = "none"
+show_raw_agent_reasoning           = false
+
+[model_providers.vllm]
+name     = "vLLM"
+env_key  = "VLLM_API_KEY"              # export VLLM_API_KEY="my-vllm-api-key"
+##base_url = "http://127.0.0.1:8000/v1"  # Needs an open SSH tunnel
+base_url = "http://host.docker.internal:8000/v1"
+wire_api = "responses"                 # OpenAI's Responses API
+
+
+# ---------------------
+# Safety and sandboxing
+# ---------------------
+# NOTE: strict filesystem access and action approval policies on the client side
+sandbox_mode       = "read-only"   # "read-only" | "workspace-write" | "danger-full-access"
+approval_policy    = "untrusted"   # "untrusted" | "on-request"| "never" | "granular" (see https://developers.openai.com/codex/config-reference)
+approvals_reviewer = "user"        # "user" | "auto_review"
+web_search         = "disabled"    # "disabled" | "cached" | "live"
+allow_login_shell  = false         # Optional hardening: disallow login shells for shell tools
+
+
+# --------------------------------
+# Automatically generated settings
+# --------------------------------
+[tui]
+session_picker_view = "dense"
+
+[tui.model_availability_nux]
+"Qwen3-Coder-Next" = 4
