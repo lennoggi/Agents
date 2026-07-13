@@ -77,18 +77,23 @@ Once Docker is installed, follow these steps:
    docker exec -u codex-client-user client bash -c "ss -tlnp | grep 4500"
    ```
 
-10. Launch the Codex app server (in the background):
+10. Attach to the server container:
     ```
     docker attach server
-    # Now you are inside the server container
+    ```
+    and launch the Codex app server (in the background):
+    ```
     export VLLM_API_KEY=my-vllm-api-key  # NOTE: use the actual key!
     mkdir -p ~/Codex_projects/Codex_server && cd ~/Codex_projects/Codex_server
     codex app-server --listen ws://127.0.0.1:4500 > codex-app-server.log 2>&1 &
     ```
 
-11. In a separate terminal, launch the Codex client:
+11. In a separate terminal, attach to the client container:
     ```
     docker attach client
+    ```
+    and launch the Codex client:
+    ```
     # Now you are inside the client container
     mkdir -p ~/Codex_projects/Codex_client && cd ~/Codex_projects/Codex_client
     codex --remote ws://127.0.0.1:4500 --cd /home/codex-server-user/Codex_projects/Codex_server
