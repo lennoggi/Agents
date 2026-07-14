@@ -6,6 +6,7 @@
 # - 1 -> FAIL: the user has write permissions to AT LEAST ONE of the provided paths
 # - 2 -> UNEXPECTED FAILURE
 # ============================================================================
+
 set -uo pipefail
 
 paths=(
@@ -29,7 +30,8 @@ do
     # Discard "Permission denied" paths by redirecting stderr to /dev/null
     writable_paths=$(find "$path" -type d -writable 2>/dev/null)
 
-    if [ -n "$writable_paths" ]; then
+    if [ -n "$writable_paths" ]
+    then
         echo "$writable_paths"
         RET=1
     fi
