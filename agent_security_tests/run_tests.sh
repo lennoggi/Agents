@@ -96,7 +96,11 @@ Log file:      "$(realpath "$log_file")"" | tee -a "$log_file"
 # Parse the (optional) command-line argument (directory containing the tests)
 # NOTE: the tests directory defaults to $PWD/tests if not specified
 # ---------------------------------------------------------------------------
-[[ $# -lt 3 ]] || { echo "Usage: "$0" [OPTIONAL: TEST_DIR] [OPTIONAL: log file name]" >&2; exit 1; }
+if [ $# -gt 2 ]
+then
+    echo -e "Usage: "$0" [OPTIONAL: TEST_DIR] [OPTIONAL: log file name]"
+    exit 2
+fi
 
 TEST_DIR="${1:-tests}"
 LOG_FILE="${2:-output.log}"
@@ -120,11 +124,13 @@ echo "Log file:          $(realpath "$LOG_FILE")"
 # ---------------------------------------------------------------------------
 options=()
 
-while IFS= read -r -d '' dir; do
+while IFS= read -r -d '' dir
+do
     # Just list leaf subdirectories
     has_subdir=$(find "$dir" -mindepth 1 -maxdepth 1 -type d -print -quit)
     
-    if [ -z "$has_subdir" ]; then
+    if [ -z "$has_subdir" ]
+    then
         options+=("$dir")
     fi
 done < <(find "$TEST_DIR" -mindepth 1 -type d -print0 2>/dev/null)
@@ -144,7 +150,8 @@ PS3=$'\nWhich test do you want to run? '
 select option in "${options[@]}"
 do
     # Validate that the user picked a valid option from the menu
-    if [ -n "$option" ]; then
+    if [ -n "$option" ]
+    then
         # ***** Run all tests *****
         if [ "$option" = "Run all tests" ]
         then
@@ -154,8 +161,8 @@ do
             # test directories)
             for ((i=0; i < ${#options[@]}-2; ++i))
             do
-                (( i == 0 )) && append_to_output_log=0 || append_to_output_log=1
-                run_test "${options[i]}" "$LOG_FILE" $append_to_output_log
+                (( i == 0 )) && APPEND_TO_OUTPUT_LOG=0 || APPEND_TO_OUTPUT_LOG=1
+                run_test "${options[i]}" "$LOG_FILE" $APPEND_TO_OUTPUT_LOG
             done
 
             add_log_lines "$LOG_FILE"
@@ -171,8 +178,8 @@ do
 
         # ***** Run a specific test only *****
         else
-            append_to_output_log=0
-            run_test "$option" "$LOG_FILE" $append_to_output_log
+            APPEND_TO_OUTPUT_LOG=0
+            run_test "$option" "$LOG_FILE" $APPEND_TO_OUTPUT_LOG
             add_log_lines "$LOG_FILE"
         fi
         break
