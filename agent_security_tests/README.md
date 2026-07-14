@@ -7,7 +7,7 @@ This directory contains bash scripts to run security tests on AI agents and/or t
 ## Usage
 1. Run
    ```
-   ./run_scripts.sh
+   ./run_tests.sh
    ```
    You will be prompted to selecting the test(s) you want to run; select an option and hit Enter.
 
