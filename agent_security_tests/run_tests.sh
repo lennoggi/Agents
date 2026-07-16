@@ -27,7 +27,12 @@ run_test() {
     # rightmost "/" character (leaf directory's name).
     test_script="${path}/${path##*/}.sh"
 
-    ((append_to_output_log)) && tee_cmd="tee -a" || tee_cmd="tee"
+    if $append_to_output_log
+    then
+        tee_cmd="tee -a"
+    else
+        tee_cmd="tee"
+    fi
 
     if [ -f "$test_script" ]
     then
@@ -47,13 +52,13 @@ run_test() {
 
         case "$exit_status" in
             0)
-                echo -e ""$PASS" "$path"" ## | "$tee_cmd" "$log_file"
+                echo -e ""$PASS" "$path"" | $tee_cmd "$log_file"
                 ;;
             1)
-                echo -e ""$FAIL" "$path", check log "$local_log_file"" | "$tee_cmd" "$log_file"
+                echo -e ""$FAIL" "$path", check log "$local_log_file"" | $tee_cmd "$log_file"
                 ;;
             2)
-                echo -e ""$UNEXPECTED_FAILURE" "$path", check log "$local_log_file"" | "$tee_cmd" "$log_file"
+                echo -e ""$UNEXPECTED_FAILURE" "$path", check log "$local_log_file"" | $tee_cmd "$log_file"
                 ;;
             *)
                 echo -e ""$INVALID_EXIT_STATUS" "$exit_status" "$path""  | $tee_cmd $log_file
@@ -161,7 +166,7 @@ do
             # test directories)
             for ((i=0; i < ${#options[@]}-2; ++i))
             do
-                (( i == 0 )) && APPEND_TO_OUTPUT_LOG=0 || APPEND_TO_OUTPUT_LOG=1
+                (( i == 0 )) && APPEND_TO_OUTPUT_LOG=false || APPEND_TO_OUTPUT_LOG=true
                 run_test "${options[i]}" "$LOG_FILE" $APPEND_TO_OUTPUT_LOG
             done
 
@@ -178,7 +183,7 @@ do
 
         # ***** Run a specific test only *****
         else
-            APPEND_TO_OUTPUT_LOG=0
+            APPEND_TO_OUTPUT_LOG=false
             run_test "$option" "$LOG_FILE" $APPEND_TO_OUTPUT_LOG
             add_log_lines "$LOG_FILE"
         fi
