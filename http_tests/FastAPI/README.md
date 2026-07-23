@@ -1,5 +1,10 @@
 # HTTP client/server pair with FastAPI
 
+## Description
+
+This is a basic example of how to set up an HTTP client/server pair using FastAPI.
+
+
 ## Instructions
 
 1. Create a virtual Python environment:
@@ -19,11 +24,13 @@
 
 4. Run FastAPI:
    ```
-   fastapi dev
+   fastapi dev main:app --host 0.0.0.0 --port 8000
    ```
    This will start an HTTP server on `localhost:8000`.
 
-5. Do whatever you need to do
+   **NOTE:** running `fastapi dev` without any other flags will behave exactly as above.
+
+5. Open the main page `http://localhost:8000/` on any web browser. See also `http://localhost:8000/docs` for a list of all available endpoints.
 
 6. Deactivate the environment:
    ```
@@ -34,10 +41,4 @@
 ## Useful links
 
 - Main web page: [https://fastapi.tiangolo.com](https://fastapi.tiangolo.com)
-
-- Start from here: [https://fastapi.tiangolo.com/tutorial](https://fastapi.tiangolo.com/tutorial)
-
-- Useful URLs:
-  - http://127.0.0.1:8000
-  - http://127.0.0.1:8000/docs
-  - http://127.0.0.1:8000/redoc
+- Start from [https://fastapi.tiangolo.com/tutorial](https://fastapi.tiangolo.com/tutorial)
