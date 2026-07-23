@@ -1,0 +1,161 @@
+<!--
+========================================================================
+This is an HTML file providing a web interface to a remote vLLM instance
+========================================================================
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+    Remote AI model web chat
+    </title>
+</head>
+
+
+<body>
+
+
+
+<!--------
+Page setup
+---------->
+<h1>
+Remote AI model web chat
+</h1>
+
+
+<h2>
+Description
+</h2>
+
+<p>
+This is a web service allowing you to connect to and chat with a remote AI model.
+</p>
+
+
+<h2>
+Information
+</h2>
+
+<p>
+Available models: <span id="models_id">Loading...</span>
+</p>
+
+<script>
+async function load_models() {
+  try {
+      const server_response = await fetch("/models");
+      const models_list     = await server_response.json();
+      document.getElementById("models_id").textContent = models_list.models.join(", ");
+  } catch (err) {
+      document.getElementById("models_id").textContent = "Unable to retrieve model list. Error: " + err.message;
+      console.error(err);
+  }
+}
+
+load_models();
+</script>
+
+<h2>
+Chat
+</h2>
+
+<p>
+Your prompt to the remote model here:
+</p>
+
+<textarea
+    id="prompt_box"
+    rows="6"
+    cols="80"
+    placeholder="Hi, how are you doing?"
+>
+</textarea>
+
+<br>
+
+<button onclick="submit_prompt()">
+Submit
+</button>
+
+<h3>
+Response
+</h3>
+
+<p id="response_box">
+</p>
+
+
+<!--------------------------------------------------------------------------
+Return the server's response via a Javascript function submitting the user's
+prompt to the agent API (see agent_api.py)
+---------------------------------------------------------------------------->
+<script>
+
+// These variable must match the IDs of the prompt and response boxes above
+const   PROMPT_BOX =   "prompt_box"
+const RESPONSE_BOX = "response_box"
+
+/* XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
+ * Hardcoding these quantities (especially VLLM_API_KEY) is UNSAFE because they
+ * are publicly visible to anyone opening this page on a web browser. Use
+ * homepage.html coupled with api.py (FastAPI gateway) instead.
+ * XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX  */
+const PORT         = 8080
+const MODEL        = "my-model"
+const VLLM_API_KEY = "my-vllm-api-key"
+
+async function submit_prompt() {
+    const prompt_box   = document.getElementById(PROMPT_BOX);
+    const response_box = document.getElementById(RESPONSE_BOX);
+
+    const prompt = prompt_box.value;
+    response_box.textContent = "Waiting for response from remote model...";
+
+    let response;
+
+    try {
+        response = await fetch(
+            // Hit the vLLM endpoint directly (NOT recommended for production)
+            // NOTE: requires PORT (e.g., 8080) to be manually forwarded to the
+            //       remote node running vLLM (use `../open_ssh_tunnel_vllm.sh`)
+            `http://127.0.0.1:${PORT}/v1/chat/completions`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${VLLM_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: `${MODEL}`,
+                    messages: [{
+                        role: "user",
+                        content: prompt
+                    }]
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // vLLM returns responses in the standard OpenAI JSON format
+            response_box.textContent = data.choices[0].message.content;
+        } else {
+            response_box.textContent = `Error: ${data.detail || response.statusText}`;
+            return;
+        }
+    } catch (err) {
+        // NOTE: use backticks for string evaluation
+        response_box.textContent = `Request failed: ${err}`;
+        return;
+    }
+}
+
+</script>
+
+</body>
+
+</html>
