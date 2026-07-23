@@ -4,7 +4,7 @@
 # 2. Get the running model's name. If --api-key was passed to "vllm serve ...",
 #    then you need to provide that key
 # Example usage:
-#   ./Open_vLLM_tunnel_vLLM.sh user@hostname remote-node 8000 8000 my-vllm-key
+#   ./open_ssh_tunnel_vllm.sh user@hostname remote-node 8000 8000 my-vllm-key
 #
 # ***** To close the tunnel *****
 # 1. List all network applications that are currently listening to incoming TCP
@@ -32,8 +32,9 @@ LOCAL_PORT=$3
 ENDPOINT_PORT=$4
 VLLM_API_KEY=$5
 
-# 0.0.0.0 means "bind all interfaces to port $LOCAL_PORT", useful e.g. when
-# connecting from a Docker container
+# 0.0.0.0 (instead of just the localhost 127.0.0.1) means "bind the whole local
+# network, not just localhost, to port $LOCAL_PORT". Useful e.g. when connecting
+# from a Docker container.
 ssh -fNT -o ExitOnForwardFailure=yes -L 0.0.0.0:$LOCAL_PORT:$NODE:$ENDPOINT_PORT $ENDPOINT
 MODEL_NAME=$(curl http://127.0.0.1:$LOCAL_PORT/v1/models -H "Authorization: Bearer $VLLM_API_KEY" | jq -r '.data[].id')
 
