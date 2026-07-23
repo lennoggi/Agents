@@ -76,11 +76,12 @@ async def get_option(option: Option):
                }
 
 
-# ------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Handle query parameters, i.e., any function parameter that is not a path
 # listed in the function's decorator
-# NOTE: `| None = None` is used to make the parameter optional
-# ------------------------------------------------------------------------
+# NOTE: `str | None = None` means the parameter can either be of string or None
+#       type and defaults to being None
+# -----------------------------------------------------------------------------
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, optional: str | None = None):
     if optional:
