@@ -20,7 +20,7 @@ Once Docker is installed, follow these steps from this directory:
 1. Set up an SSH tunnel from your local machine to the remote compute node running vLLM:
    ```
    export VLLM_API_KEY=my-vllm-api-key  # NOTE: use the actual key!
-   ../open_vLLM_tunnel_vllm.sh user@hostname remote-node 8000 8000 my-vllm-key
+   ../open_ssh_tunnel_vllm.sh user@hostname remote-node 8000 8000 my-vllm-key
    ```
 
 2. Build the Docker images for the Codex app server (see `Codex/Server/Dockerfile.codex.server`) and client (see `Codex/Client/Dockerfile.codex.client`):
