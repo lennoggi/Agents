@@ -6,14 +6,13 @@
 # - /chat  (POST): hit a remote vLLM instance
 # - #TODO: /agent (POST): hit a remote AI agent using that vLLM instance as its backend engine
 # ==============================================================================
-
 import os
 from fastapi import FastAPI
+import httpx
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 ##from openai import OpenAI
 from openai import AsyncOpenAI
-
 
 # -----------------------
 # Prepare the environment
@@ -27,7 +26,9 @@ class ChatRequest(BaseModel):
 
 # OpenAI-compatible tools needed to talk to vLLM
 try:
-    vllm_port = os.environ["VLLM_PORT"]
+    vllm_port       = os.environ["VLLM_PORT"]
+    vllm_url        = f"http://127.0.0.1:{vllm_port}"
+    vllm_openai_url = vllm_url + "/v1"
 except KeyError:
     print("Environment variable VLLM_PORT is not defined")
 
@@ -55,15 +56,23 @@ client = AsyncOpenAI(
 async def get_homepage():
     return FileResponse(os.environ["HOMEPAGE"],)
 
+
 @app.get("/health")
-async def get_health():
-    return {"status": "ok"}
+async def get_vllm_health():
+    vllm_health = httpx.get(vllm_url + "/health")
+
+    if vllm_health.status_code == 200:
+        return {"vllm_health_status": "ok"}
+    else:
+        return {"vllm_health_status": f"Issue on the vLLM server detected (HTTP error code: {vllm_health.status_code})"}
+
 
 @app.get("/models")
 async def get_models():
     models_list = await client.models.list()
     ##return {"first model": models_list.data[0].id}
     return {"models": [model.id for model in models_list.data]}
+
 
 
 # ------------
