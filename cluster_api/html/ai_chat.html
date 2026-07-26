@@ -1,7 +1,7 @@
 <!--
-========================================================================
-This is an HTML file providing a web interface to a remote vLLM instance
-========================================================================
+=======================================================
+This is an HTML web interface to a remote vLLM instance
+=======================================================
 -->
 
 <!DOCTYPE html>
@@ -9,7 +9,7 @@ This is an HTML file providing a web interface to a remote vLLM instance
 
 <head>
     <title>
-    Remote AI model web chat
+    AI chat
     </title>
 </head>
 
@@ -22,7 +22,7 @@ This is an HTML file providing a web interface to a remote vLLM instance
 Page setup
 ---------->
 <h1>
-Remote AI model web chat
+AI chat
 </h1>
 
 
@@ -46,7 +46,7 @@ Available models: <span id="models_id">Loading...</span>
 <script>
 async function load_models() {
   try {
-      const server_response = await fetch("/models");
+      const server_response = await fetch("/vllm-models");
       const models_list     = await server_response.json();
       document.getElementById("models_id").textContent = models_list.models.join(", ");
   } catch (err) {
@@ -113,7 +113,7 @@ async function submit_prompt() {
             //       served the current page and prevent the browser from
             //       throwing CORS-policy-related errors
             //"http://127.0.0.1:8000/chat",
-            "/chat",
+            "/send_prompt",
             {
                 method: "POST",
                 headers: {
