@@ -1,9 +1,13 @@
-# vLLM and AI agent API
+# HPC cluster portal
 
 ## Description
-This directory contains code to connect a web browser to a remote instance of [vLLM](https://vllm.ai) or to an AI agent using that vLLM instance as its backend engine through [FastAPI](https://fastapi.tiangolo.com).
 
-**NOTE (2026-07-23):** the AI agent part is still work in progress
+This is a minimal, [FastAPI](https://fastapi.tiangolo.com)-based web portal to an HPC cluster. From the portal's dashboard, you can access the following cluster services:
+- **[Work in progress]** The cluster user guide
+- **[Work in progress]** A remote visualization portal
+- An AI chat backed by a [vLLM](https://vllm.ai) instance running on the cluster
+
+**NOTE:** accessing the portal currently requires opening an SSH tunnel to the compute node running vLLM (see the instructions below).
 
 
 ## Instructions
@@ -32,7 +36,7 @@ This directory contains code to connect a web browser to a remote instance of [v
 
 3. Run FastAPI:
    ```
-   fastapi dev
+   fastapi run
    ```
    This will read into `pyproject.toml`, read `api.py`, and start an HTTP server on `localhost:8000`.
 
@@ -45,9 +49,9 @@ This directory contains code to connect a web browser to a remote instance of [v
      fastapi dev api:app --host 0.0.0.0 --port 8000
      ```
 
-4. Open the main page `http://localhost:8000/` on any web browser. See also `http://localhost:8000/docs` for a list of all available endpoints.
+4. Navigate to the dashboard at `http://localhost:8000/` on any web browser and explore all the services. See also `http://localhost:8000/docs` for a list of all available endpoints.
 
-5. Deactivate the environment:
+5. Once you are done, deactivate the environment:
    ```
    deactivate
    ```
