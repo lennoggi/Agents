@@ -39,6 +39,11 @@ approvals_reviewer = "user"                # "user" | "auto_review"
 web_search         = "disabled"            # "disabled" | "cached" | "live"
 allow_login_shell  = false                 # Optional hardening: disallow login shells for shell tools
 
+# Disable automatic metrics collection (see
+# https://learn.chatgpt.com/docs/config-file/config-advanced#metrics )
+[analytics]
+enabled = false
+
 
 # --------------------------------
 # Automatically generated settings
