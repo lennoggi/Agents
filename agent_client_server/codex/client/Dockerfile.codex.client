@@ -25,5 +25,5 @@ ENV PATH="/home/$UNAME/.local/bin:${PATH}"
 ENV CODEX_HOME=/home/$UNAME/.codex
 
 # Copy the needed Codex files over to the image
-COPY --chown=$UNAME:$UNAME Codex/Client/config.toml $CODEX_HOME/
-COPY --chown=$UNAME:$UNAME Codex/Qwen3-Coder-Next.json $CODEX_HOME/model-catalogs/
+COPY --chown=$UNAME:$UNAME codex/client/config.toml $CODEX_HOME/
+COPY --chown=$UNAME:$UNAME codex/Qwen3-Coder-Next.json $CODEX_HOME/model-catalogs/
