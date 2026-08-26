@@ -3,6 +3,7 @@
 # 2. Activate the environment
 # 3. Install FastAPI and other required packages
 set -x
+rm -rf fastapi_venv
 python3 -m venv fastapi_venv
 . fastapi_venv/bin/activate
 pip install -r requirements.txt
@@ -17,7 +18,7 @@ export MODEL_NAME=$(curl http://127.0.0.1:$VLLM_PORT/v1/models -H "Authorization
 set +x
 echo ""
 echo "================================================================================"
-echo "Homepage file: "$HOMEPAGE""
+echo "Homepage file: "$DASHBOARD""
 echo "vLLM port:     $VLLM_PORT"
 echo "vLLM URL:      http://127.0.0.1:$VLLM_PORT/v1"
 echo "vLLM API key:  "$VLLM_API_KEY""
