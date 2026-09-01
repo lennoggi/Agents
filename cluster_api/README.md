@@ -42,8 +42,8 @@ This is a minimal, [FastAPI](https://fastapi.tiangolo.com)-based web portal to a
 
    Notes:
    - You can have FastAPI read a custom API file (default is `main.py`) with a custom FastAPI app name (default is `app`) by either:
-     a. Passing `my-api-file:my-app` as a command line argument (e.g., `api:app`)
-     b. Editing `pyproject.toml`
+     - Passing `my-api-file:my-app` as a command line argument (e.g., `api:app`), or
+     - Editing `pyproject.toml`
    - You can override the default host (0.0.0.0) and port (8000) used by FastAPI via command-line arguments, for example:
      ```
      fastapi dev api:app --host 0.0.0.0 --port 8000
