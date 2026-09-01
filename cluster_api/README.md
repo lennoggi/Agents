@@ -29,10 +29,10 @@ This is a minimal, [FastAPI](https://fastapi.tiangolo.com)-based web portal to a
    . setenv.sh
    ```
    This will:
-   a. Create a virtual Python environment
-   b. Activate the environment
-   c. Install FastAPI and other required packages in the environment
-   d. Export all the needed environment variables
+   1. Create a virtual Python environment
+   2. Activate the environment
+   3. Install FastAPI and other required packages in the environment
+   4. Export all the needed environment variables
 
 3. Run FastAPI:
    ```
