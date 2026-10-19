@@ -6,10 +6,10 @@ set -euo pipefail
 # -----------------------
 # User-defined parameters
 # -----------------------
-export MODEL_PATH="/path/to/models/hub/models--Qwen--Qwen3-Coder-Next/snapshots/a7fbcb5c0e12d62a448eaa0e260346bf5dcc0feb"
+export MODEL_PATH="/path/to/hf_home/hub/models--Qwen--Qwen3-Coder-Next/snapshots/a7fbcb5c0e12d62a448eaa0e260346bf5dcc0feb"
 export MODEL_NAME="Qwen3-Coder-Next"
 
-export HF_HOME="/path/to/models"
+export HF_HOME="/path/to/hf_home"
 
 export TMPDIR="/tmp/$USER"  # Node-local, fast I/O
 export TMPHOME="$TMPDIR/home"
@@ -25,7 +25,7 @@ export FLASHINFER_WORKSPACE_BASE="$TMPDIR/flashinfer_workspace_base"
 
 VLLM_PORT=8000
 RAY_PORT=6379
-VLLM_API_KEY="my-vllm-token"
+VLLM_API_KEY="my-vllm-key"
 
 
 # -----------------
