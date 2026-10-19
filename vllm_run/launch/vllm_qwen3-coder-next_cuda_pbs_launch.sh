@@ -57,10 +57,11 @@ exec > "$PBS_O_WORKDIR/$(hostname -s).out" 2> "$PBS_O_WORKDIR/$(hostname -s).err
 # Node identity and network setup
 # -------------------------------
 NNODES=$(sort -u $PBS_NODEFILE | wc -l)
-
-echo "==================================================="
-echo "Running on $NNODES nodes with $NCPUS CPUs and $NGPUS GPUs per node"
-echo "==================================================="
+INFO_STR="Running on $NNODES nodes with $NCPUS CPUs and $NGPUS GPUs per node"
+printf '%*s' "${#INFO_STR}" '' | tr ' ' '='
+echo ""
+echo $INFO_STR
+printf '%*s' "${#INFO_STR}" '' | tr ' ' '='
 
 THIS_NODE_SHORT=$(hostname -s)
 HEAD_NODE_SHORT=$(sort -u $PBS_NODEFILE | head -n 1 | cut -d. -f1)
