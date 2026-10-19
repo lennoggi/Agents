@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-rundir="/path/to/user/scratch/vLLM_Qwen3-Coder-Next_CUDA_run"
-launchscript="vLLM_Qwen3-Coder-Next_CUDA_launch.sh"
-submitscript="vLLM_Qwen3-Coder-Next_CUDA_sub.sh"
+rundir="/path/to/user/scratch/vLLM_Qwen3-Coder-Next_CUDA_PBS_run"
+launchscript="vLLM_Qwen3-Coder-Next_CUDA_PBS_launch.sh"
+submitscript="vLLM_Qwen3-Coder-Next_CUDA_PBS_sub.sh"
 submit_cmd="qsub"
 
 mkdir ${rundir}
