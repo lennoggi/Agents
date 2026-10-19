@@ -2,43 +2,30 @@
 
 set -euo pipefail
 
-# ---------------
-# Input variables
-# ---------------
-[[ $# -eq 6 ]] || { echo "Usage: ${BASH_SOURCE[0]} PYTHON_MODULE CUDA_MODULE VENV NODEFILE NCPUS NGPUS" >&2; exit 1; }
-
-export PYTHON_MODULE=$1
-export CUDA_MODULE=$2
-export VENV=$3
-export NODEFILE=$4
-export NCPUS=$5
-export NGPUS=$6
-
 
 # -----------------------
 # User-defined parameters
 # -----------------------
-export MODEL_PATH="/scrt1/D/cibo/cibo4/models/hub/models--Qwen--Qwen3-Coder-Next/snapshots/a7fbcb5c0e12d62a448eaa0e260346bf5dcc0feb"
+export MODEL_PATH="/path/to/models/hub/models--Qwen--Qwen3-Coder-Next/snapshots/a7fbcb5c0e12d62a448eaa0e260346bf5dcc0feb"
 export MODEL_NAME="Qwen3-Coder-Next"
 
-export HF_HOME="/scrt1/D/cibo/cibo4/models"
+export HF_HOME="/path/to/models"
 
-##export WORKDIR="/work/scr01/cibo39"  # Node-local, fast I/O
-export WORKDIR="/tmp/cibo39"  # Node-local, fast I/O
-export WORKHOME="$WORKDIR/home"
-export RAY_TMP_DIR="$WORKDIR/ray_tmp_$PBS_JOBID"
+export TMPDIR="/tmp/$USER"  # Node-local, fast I/O
+export TMPHOME="$TMPDIR/home"
+export RAY_TMPDIR="$TMPDIR/ray_tmp_$PBS_JOBID"
 
 # NOTE: redirect cache directories to node-local paths to prevent multiple Ray
 #       workers from racing for the same files
-export CUDA_CACHE_PATH="$WORKDIR/cuda_cache"
-export TRITON_CACHE_DIR="$WORKDIR/triton_cache"
-export VLLM_CACHE_ROOT="$WORKDIR/vllm_cache"
-export TORCHINDUCTOR_CACHE_DIR="$WORKDIR/torch_inductor_cache"
-export FLASHINFER_WORKSPACE_BASE="$WORKDIR/flashinfer_workspace_base"
+export CUDA_CACHE_PATH="$TMPDIR/cuda_cache"
+export TRITON_CACHE_DIR="$TMPDIR/triton_cache"
+export VLLM_CACHE_ROOT="$TMPDIR/vllm_cache"
+export TORCHINDUCTOR_CACHE_DIR="$TMPDIR/torch_inductor_cache"
+export FLASHINFER_WORKSPACE_BASE="$TMPDIR/flashinfer_workspace_base"
 
 VLLM_PORT=8000
 RAY_PORT=6379
-VLLM_API_KEY="token-abc123"
+VLLM_API_KEY="my-vllm-token"
 
 
 # -----------------
@@ -49,10 +36,16 @@ ml $PYTHON_MODULE
 ml $CUDA_MODULE
 . $VENV/bin/activate
 
-rm -rf $WORKDIR
-mkdir -p $WORKDIR $WORKHOME $RAY_TMP_DIR $CUDA_CACHE_PATH $TRITON_CACHE_DIR $VLLM_CACHE_ROOT $TORCHINDUCTOR_CACHE_DIR $FLASHINFER_WORKSPACE_BASE
+rm -rf $TMPDIR
+mkdir -p $TMPDIR $TMPHOME $RAY_TMPDIR $CUDA_CACHE_PATH $TRITON_CACHE_DIR $VLLM_CACHE_ROOT $TORCHINDUCTOR_CACHE_DIR $FLASHINFER_WORKSPACE_BASE
 
 unset OMP_NUM_THREADS
+
+
+# ----------
+# Trap setup
+# ----------
+trap 'ray stop; rm -rf $TMPDIR' EXIT INT TERM ERR
 
 
 # -----------------------------------------------------
@@ -64,18 +57,17 @@ exec > "$PBS_O_WORKDIR/$(hostname -s).out" 2> "$PBS_O_WORKDIR/$(hostname -s).err
 # -------------------------------
 # Node identity and network setup
 # -------------------------------
-NNODES=$(sort -u $NODEFILE | wc -l)
+NNODES=$(sort -u $PBS_NODEFILE | wc -l)
 
 echo "==================================================="
 echo "Running on $NNODES nodes with $NCPUS CPUs and $NGPUS GPUs per node"
 echo "==================================================="
 
 THIS_NODE_SHORT=$(hostname -s)
-HEAD_NODE_SHORT=$(sort -u $NODEFILE | head -1 | cut -d. -f1)
+HEAD_NODE_SHORT=$(sort -u $PBS_NODEFILE | head -n 1 | cut -d. -f1)
 
 THIS_IP=$(getent ahostsv4 "$THIS_NODE_SHORT" | awk 'NR==1 {print $1}')
 HEAD_IP=$(getent ahostsv4 "$HEAD_NODE_SHORT" | awk 'NR==1 {print $1}')
-
 
 export MASTER_ADDR=$HEAD_IP
 export MASTER_PORT=$RAY_PORT
@@ -109,12 +101,13 @@ export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((NGPUS - 1)))
 # Run
 # ---
 # ***** Head node *****
-if [[ "$THIS_NODE_SHORT" == "$HEAD_NODE_SHORT" ]]; then
+if [[ "$THIS_NODE_SHORT" == "$HEAD_NODE_SHORT" ]]
+then
     ray start --head \
         --node-ip-address $HEAD_IP \
         --port $RAY_PORT \
         --num-gpus $NGPUS \
-        --temp-dir $RAY_TMP_DIR
+        --temp-dir "$RAY_TMPDIR"
 
     echo "Waiting for $NNODES nodes..."
     NWAIT=60
@@ -128,11 +121,9 @@ if [[ "$THIS_NODE_SHORT" == "$HEAD_NODE_SHORT" ]]; then
 
     ray status
 
-##    python3 -m vllm.entrypoints.openai.api_server \
-    vllm serve \
-        --model $MODEL_PATH \
-        --served-model-name $MODEL_NAME \
-        --api-key $VLLM_API_KEY \
+    vllm serve "$MODEL_PATH" \
+        --served-model-name "$MODEL_NAME" \
+        --api-key "$VLLM_API_KEY" \
         --distributed-executor-backend ray \
         --tensor-parallel-size $NGPUS \
         --pipeline-parallel-size $NNODES \
@@ -156,7 +147,5 @@ else
         --node-ip-address $THIS_IP \
         --address $HEAD_IP:$RAY_PORT \
         --num-gpus $NGPUS \
-        --temp-dir $RAY_TMP_DIR
+        --temp-dir "$RAY_TMPDIR"
 fi
-
-trap 'deactivate; rm -rf $WORKDIR' EXIT INT TERM ERR

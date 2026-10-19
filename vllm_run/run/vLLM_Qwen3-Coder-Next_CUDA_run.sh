@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-rundir="/scrt1/D/cibo/cibo39/vLLM_Qwen3-Coder-Next_HPCS_run"
-launchscript="vLLM_Qwen3-Coder-Next_HPCS_launch.sh"
-submitscript="vLLM_Qwen3-Coder-Next_HPCS_sub.sh"
+rundir="/path/to/user/scratch/vLLM_Qwen3-Coder-Next_CUDA_run"
+launchscript="vLLM_Qwen3-Coder-Next_CUDA_launch.sh"
+submitscript="vLLM_Qwen3-Coder-Next_CUDA_sub.sh"
 submit_cmd="qsub"
 
 mkdir ${rundir}
