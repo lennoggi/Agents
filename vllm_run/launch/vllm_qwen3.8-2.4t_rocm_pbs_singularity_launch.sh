@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-
 # -----------------------
 # User-defined parameters
 # -----------------------
