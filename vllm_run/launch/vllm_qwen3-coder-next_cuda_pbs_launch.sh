@@ -38,13 +38,8 @@ ml $CUDA_MODULE
 rm -rf $TMPDIR
 mkdir -p $TMPDIR $TMPHOME $RAY_TMPDIR $CUDA_CACHE_PATH $TRITON_CACHE_DIR $VLLM_CACHE_ROOT $TORCHINDUCTOR_CACHE_DIR $FLASHINFER_WORKSPACE_BASE
 
-unset OMP_NUM_THREADS
-
-
-# ----------
-# Trap setup
-# ----------
 trap 'ray stop; rm -rf $TMPDIR' EXIT INT TERM ERR
+unset OMP_NUM_THREADS
 
 
 # -----------------------------------------------------

@@ -30,18 +30,14 @@ RAY_PORT=6379
 VLLM_API_KEY="my-vllm-key"
 
 
-# ----------
-# Trap setup
-# ----------
-SING="singularity exec --rocm --no-home -B "$TMPDIR":"$TMPDIR":rw,"$HF_HOME":"$HF_HOME":ro "$SINGULARITY_IMAGE""
-trap '$SING ray stop; rm -rf $TMPDIR' EXIT INT TERM ERR
-
-
 # -----------------
 # Environment setup
 # -----------------
 rm -rf $TMPDIR
 mkdir -p $TMPDIR $TMPHOME $RAY_TMPDIR $AMD_COMGR_CACHE_DIR $TRITON_CACHE_DIR $VLLM_CACHE_ROOT $TORCHINDUCTOR_CACHE_DIR $FLASHINFER_WORKSPACE_BASE
+
+SING="singularity exec --rocm --no-home -B "$TMPDIR":"$TMPDIR":rw,"$HF_HOME":"$HF_HOME":ro "$SINGULARITY_IMAGE""
+trap '$SING ray stop; rm -rf $TMPDIR' EXIT INT TERM ERR
 
 unset OMP_NUM_THREADS
 
