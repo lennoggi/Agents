@@ -8,7 +8,7 @@ set -euo pipefail
 # -----------------------
 # User-defined parameters
 # -----------------------
-INSTALL_DIR="/scrt1/D/cibo/cibo39/vllm_install_cuda"
+INSTALL_DIR="/path/to/user/scratch/vllm_install_cuda"
 VENV="$INSTALL_DIR/vllm-env"
 # -----------------------
 
